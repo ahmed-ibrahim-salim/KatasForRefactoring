@@ -17,8 +17,12 @@ _ = aGame.add(playerName: "Pat")
 _ = aGame.add(playerName: "Sue")
 
 repeat {
-    
-    aGame.roll(roll: Int(arc4random_uniform(5)) + 1)
+    do{
+        try aGame.roll(roll: Int(arc4random_uniform(5)) + 1)
+        
+    }catch let error{
+        print(error.localizedDescription)
+    }
     
     if (Int(arc4random_uniform(9)) == 7) {
         notAWinner = aGame.wrongAnswer()

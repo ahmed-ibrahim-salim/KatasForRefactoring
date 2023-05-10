@@ -56,7 +56,14 @@ public class Game {
 		return players.count
 	}
 
-    public func roll(roll: Int) {
+    public func roll(roll: Int) throws {
+        
+        guard players.count >= 2 else{
+            print("the game only starts with two players, add players please")
+            throw GameError.gameMustHaveMoreThanOnePlayer
+            
+        }
+        
 		print(players[currentPlayer], "is the current player")
 		print("They have rolled a", roll)
 		
@@ -171,4 +178,8 @@ public class Game {
     private var didPlayerWin: Bool {
 		return !(purses[currentPlayer] == 6)
 	}
+}
+
+enum GameError: Error{
+    case gameMustHaveMoreThanOnePlayer
 }
