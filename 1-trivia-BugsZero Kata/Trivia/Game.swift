@@ -8,6 +8,20 @@
 
 import Foundation
 
+
+//class Player{
+//    var name: String
+//    var place = 0
+//    var purse = 0
+//    var inPenalityBox = false
+//
+//    init(name: String) {
+//        self.name = name
+//    }
+//
+//}
+
+
 public class Game {
     var players = [String]()
     var places = [Int](repeating: 0, count: 6)
@@ -22,7 +36,7 @@ public class Game {
     var currentPlayer = 0
     var isGettingOutOfPenaltyBox = false
     
-    public  init(){
+    public init(){
     	for i in 0..<50 {
 			popQuestions.append("Pop Question \(i)")
 			scienceQuestions.append(("Science Question \(i)"))
@@ -31,35 +45,38 @@ public class Game {
     	}
     }
 
-    public func createRockQuestion(index: Int) -> String{
+    private func createRockQuestion(index: Int) -> String{
 		return "Rock Question \(index)"
 	}
 	
-	public func isPlayable() -> Bool {
-		return howManyPlayers() >= 2
+	private func isPlayable() -> Bool {
+		return howManyPlayers() <= 6 && howManyPlayers() >= 2
 	}
 
+    // MARK: Start add Players
     public func add(playerName: String) -> Bool {
 		
 		
 	    players.append(playerName)
-	    places[howManyPlayers()] = 0
-	    purses[howManyPlayers()] = 0
-	    inPenaltyBox[howManyPlayers()] = false
-	    
+        places.append(0)
+        purses.append(0)
+        inPenaltyBox.append(false)
+
+        
 	    print(playerName, "was added")
 	    print("They are player number", players.count)
 		return true
 	}
 	
-	public func howManyPlayers() -> Int {
+	private func howManyPlayers() -> Int {
 		return players.count
 	}
 
+    // MARK: Starting game
     public func roll(roll: Int) throws {
         
-        guard players.count >= 2 else{
-            print("the game only starts with two players, add players please")
+        guard isPlayable() else{
+            print("the game must have from 2 to 6 players")
             throw GameError.gameMustHaveMoreThanOnePlayer
             
         }
@@ -124,43 +141,46 @@ public class Game {
 		return "Rock"
 	}
 
-	public func wasCorrectlyAnswered() -> Bool {
+    fileprivate func gettingOut() -> Bool {
+        if isGettingOutOfPenaltyBox {
+            print("Answer was correct!!!!")
+            purses[currentPlayer] += 1
+            print(players[currentPlayer],
+                  "now has",
+                  purses[currentPlayer],
+                  "Gold Coins.")
+            
+            moveToNextPlayer()
+            
+            return didPlayerWin
+            
+            } else {
+                moveToNextPlayer()
+                return true
+            }
+        }
+
+    private func moveToNextPlayer(){
+        currentPlayer += 1
+        if currentPlayer == players.count {currentPlayer = 0}
+    }
+    public func wasCorrectlyAnswered() -> Bool {
 		if inPenaltyBox[currentPlayer]{
-			if isGettingOutOfPenaltyBox {
-				print("Answer was correct!!!!")
-				purses[currentPlayer] += 1
-				print(players[currentPlayer],
-						"now has",
-						purses[currentPlayer],
-						"Gold Coins.")
-				
-				let winner = didPlayerWin
-				currentPlayer += 1
-                if currentPlayer == players.count {currentPlayer = 0}
-				
-				return winner
-			} else {
-				currentPlayer += 1
-                if currentPlayer == players.count {currentPlayer = 0}
-				return true
-			}
-			
-			
+            return gettingOut()
 			
 		} else {
 		
-			print("Answer was corrent!!!!")
+			print("Answer was correct!!!!")
 			purses[currentPlayer] += 1
 			print(players[currentPlayer],
 					"now has",
 					purses[currentPlayer],
 					"Gold Coins.")
 			
-			let winner = didPlayerWin
-			currentPlayer += 1
-            if currentPlayer == players.count {currentPlayer = 0}
+            
+            moveToNextPlayer()
 			
-			return winner
+			return didPlayerWin
 		}
 	}
 	
@@ -169,8 +189,7 @@ public class Game {
 		print(players[currentPlayer], "was sent to the penalty box")
 		inPenaltyBox[currentPlayer] = true
 		
-		currentPlayer += 1
-        if currentPlayer == players.count {currentPlayer = 0}
+        moveToNextPlayer()
 		return true
 	}
 
