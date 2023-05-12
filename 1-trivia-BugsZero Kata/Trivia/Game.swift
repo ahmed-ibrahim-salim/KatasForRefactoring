@@ -47,7 +47,7 @@ public class Game {
     }
     
     private func isPlayable() -> Bool {
-        return howManyPlayers() <= 6 && howManyPlayers() >= 2
+        return players.count <= 6 && players.count >= 2
     }
     
     // MARK: Start add Players
@@ -65,9 +65,6 @@ public class Game {
         return true
     }
     
-    private func howManyPlayers() -> Int {
-        return players.count
-    }
     
     // MARK: Starting game
     fileprivate func checkAndUpdatePlace() {
@@ -76,7 +73,7 @@ public class Game {
         }
     }
     
-    private func isGettingOutOfPenalety(_ roll: Int) {
+    private func canGetOutOfPenalety(_ roll: Int) {
         if roll % 2 != 0 {
             isGettingOutOfPenaltyBox = true
             
@@ -110,7 +107,7 @@ public class Game {
         print("They have rolled a", roll)
         
         if inPenaltyBox[currentPlayerIndex] {
-            isGettingOutOfPenalety(roll)
+            canGetOutOfPenalety(roll)
             
         } else {
             
@@ -203,21 +200,33 @@ class QuestionsData{
     static var sportsQuestions = [String]()
     static var rockQuestions = [String]()
     
+    static func dequeueQuestionThenEnqueueQuestionAgain(questionsList: inout [String]){
+        
+        if questionsList.count > 0{
+            let removedQuestion = questionsList.removeFirst()
+            questionsList.append(removedQuestion)
+            print(removedQuestion)
+        }
+        
+    }
+    
     static func askQuestion(_ placeNom: Int) {
         if QuestionsData.currentCategory(placeNom: placeNom) == .Pop {
-            print(QuestionsData.popQuestions.removeFirst())}
+            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
+        }
         if  QuestionsData.currentCategory(placeNom: placeNom) == .Science{
-            print(QuestionsData.scienceQuestions.removeFirst())}
+            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
+        }
         if  QuestionsData.currentCategory(placeNom: placeNom) == .Sports{
-            print(QuestionsData.sportsQuestions.removeFirst())}
+            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
+        }
         if  QuestionsData.currentCategory(placeNom: placeNom) == .Rock{
-            print(QuestionsData.rockQuestions.removeFirst())}
+            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
+        }
     }
 
     static func currentCategory(placeNom: Int) -> QuestionCategory{
-        // Based on places
-        print(popQuestions.removeFirst())
-        //        let placeNom = places[currentPlayerIndex]
+
         if placeNom == 0 || placeNom == 4 || placeNom == 0{
             return .Pop
         }else if placeNom == 1 || placeNom == 5 || placeNom == 9{
