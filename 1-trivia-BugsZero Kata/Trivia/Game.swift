@@ -9,56 +9,39 @@
 import Foundation
 
 
-//class Player{
-//    var name: String
-//    var place = 0
-//    var purse = 0
-//    var inPenalityBox = false
-//
-//    init(name: String) {
-//        self.name = name
-//    }
-//
-//}
-
 
 public class Game {
-    var players = [String]()
-    var places = [Int](repeating: 0, count: 6)
-    var purses  = [Int](repeating: 0, count: 6)
-    var inPenaltyBox  = [Bool](repeating: false, count: 6)
-    
-    
-    
+    var players: [Player] = []
+
     var currentPlayerIndex = 0
     var isGettingOutOfPenaltyBox = false
     
+    
+    var popCategory: QuestionCategory = PopCategory()
+    var scienceCategory: QuestionCategory = ScienceCategory()
+    var sportsCategory: QuestionCategory = SportsCategory()
+    var rockCategory: QuestionCategory = RockCategory()
+    var spaceCategory: QuestionCategory = SpaceCategory()
+    
     public init(){
-        for i in 0..<50 {
-            QuestionsData.popQuestions.append("Pop Question \(i)")
-            QuestionsData.scienceQuestions.append(("Science Question \(i)"))
-            QuestionsData.sportsQuestions.append(("Sports Question \(i)"))
-            QuestionsData.rockQuestions.append(createRockQuestion(index: i))
+        generateQuestionsWithCount(questionsCount: 50)
+        
+        func generateQuestionsWithCount(questionsCount: Int) {
+                        
+            for i in 0..<(questionsCount - 1) {
+                popCategory.questionsList.append("Pop Question \(i)")
+                scienceCategory.questionsList.append(("Science Question \(i)"))
+                sportsCategory.questionsList.append(("Sports Question \(i)"))
+                rockCategory.questionsList.append(("Rock Question \(i)"))
+                spaceCategory.questionsList.append(("Space Question \(i)"))
+            }
         }
     }
-    
-    private func createRockQuestion(index: Int) -> String{
-        return "Rock Question \(index)"
-    }
-    
-    private func isPlayable() -> Bool {
-        return players.count <= 6 && players.count >= 2
-    }
-    
+
     // MARK: Start add Players
     public func add(playerName: String) -> Bool {
         
-        
-        players.append(playerName)
-        places.append(0)
-        purses.append(0)
-        inPenaltyBox.append(false)
-        
+        players.append(Player(playerName: playerName))
         
         print(playerName, "was added")
         print("They are player number", players.count)
@@ -68,31 +51,59 @@ public class Game {
     
     // MARK: Starting game
     fileprivate func checkAndUpdatePlace() {
-        if places[currentPlayerIndex] > 11 {
-            places[currentPlayerIndex] -= 12
+        if players[currentPlayerIndex].place > 11 {
+            players[currentPlayerIndex].place -= 12
         }
     }
+    
+    
+    
+    // place -> question category
+    func currentCategory(_ place: Int) -> QuestionCategory{
+
+        if place == 0 || place == 3 || place == 4{
+            return popCategory
+        }else if place == 1 || place == 5 || place == 9{
+            return scienceCategory
+        }else if place == 2 || place == 6 || place == 10{
+            return sportsCategory
+        }else if place == 7 || place == 8 {
+            return spaceCategory
+        }else{
+            return rockCategory
+        }
+    }
+    
     
     private func canGetOutOfPenalety(_ roll: Int) {
         if roll % 2 != 0 {
             isGettingOutOfPenaltyBox = true
             
-            print(players[currentPlayerIndex], "is getting out of the penalty box")
-            places[currentPlayerIndex] += roll
+            print(players[currentPlayerIndex].playerName, "is getting out of the penalty box")
+            players[currentPlayerIndex].place += roll
             
             checkAndUpdatePlace()
             
-            print(players[currentPlayerIndex]
+            print(players[currentPlayerIndex].playerName
                   + "'s new location is",
-                  places[currentPlayerIndex])
+                  players[currentPlayerIndex].place)
             
-            print("The category is", QuestionsData.currentCategory(placeNom: places[currentPlayerIndex]))
+            print("The category is", currentCategory(players[currentPlayerIndex].place))
             
-            QuestionsData.askQuestion(places[currentPlayerIndex])
+            // MARK: Ask
+            var categoryType = currentCategory(players[currentPlayerIndex].place)
+            
+            categoryType.askQuestion()
+            
         } else {
-            print(players[currentPlayerIndex], "is not getting out of the penalty box")
+            print(players[currentPlayerIndex].playerName, "is not getting out of the penalty box")
             isGettingOutOfPenaltyBox = false
         }
+    }
+    
+    
+    private func isPlayable() -> Bool {
+        return players.count <= 6 && players.count >= 2
     }
     
     public func roll(roll: Int) throws {
@@ -103,29 +114,31 @@ public class Game {
             
         }
         
-        print(players[currentPlayerIndex], "is the current player")
+        print(players[currentPlayerIndex].playerName, "is the current player")
         print("They have rolled a", roll)
         
-        if inPenaltyBox[currentPlayerIndex] {
+        if players[currentPlayerIndex].isPenalityBox {
             canGetOutOfPenalety(roll)
             
         } else {
             
-            places[currentPlayerIndex] += roll
+            players[currentPlayerIndex].place += roll
             
             checkAndUpdatePlace()
             
-            print(players[currentPlayerIndex]
+            print(players[currentPlayerIndex].playerName
                   + "'s new location is",
-                  places[currentPlayerIndex])
-            print("The category is", QuestionsData.currentCategory(placeNom: places[currentPlayerIndex]))
+                  players[currentPlayerIndex].place)
+            print("The category is", currentCategory(players[currentPlayerIndex].place))
             
-            QuestionsData.askQuestion(places[currentPlayerIndex])
+            // MARK: Ask
+            var categoryType = currentCategory(players[currentPlayerIndex].place)
+            
+            categoryType.askQuestion()
+            
         }
         
     }
-
-    
     
     private func moveToNextPlayer(){
         currentPlayerIndex += 1
@@ -136,10 +149,10 @@ public class Game {
     private func gettingOut() -> Bool {
         if isGettingOutOfPenaltyBox {
             print("Answer was correct!!!!")
-            purses[currentPlayerIndex] += 1
-            print(players[currentPlayerIndex],
+            players[currentPlayerIndex].purse += 1
+            print(players[currentPlayerIndex].playerName,
                   "now has",
-                  purses[currentPlayerIndex],
+                  players[currentPlayerIndex].purse,
                   "Gold Coins.")
             
             moveToNextPlayer()
@@ -154,16 +167,16 @@ public class Game {
     
     // MARK: Answers Methods
     public func wasCorrectlyAnswered() -> Bool {
-        if inPenaltyBox[currentPlayerIndex]{
+        if players[currentPlayerIndex].isPenalityBox{
             return gettingOut()
             
         } else {
             
             print("Answer was correct!!!!")
-            purses[currentPlayerIndex] += 1
-            print(players[currentPlayerIndex],
+            players[currentPlayerIndex].purse += 1
+            print(players[currentPlayerIndex].playerName,
                   "now has",
-                  purses[currentPlayerIndex],
+                  players[currentPlayerIndex].purse,
                   "Gold Coins.")
             
             
@@ -175,8 +188,8 @@ public class Game {
     
     public func wrongAnswer()->Bool{
         print("Question was incorrectly answered")
-        print(players[currentPlayerIndex], "was sent to the penalty box")
-        inPenaltyBox[currentPlayerIndex] = true
+        print(players[currentPlayerIndex].playerName, "was sent to the penalty box")
+        players[currentPlayerIndex].isPenalityBox = true
         
         moveToNextPlayer()
         return true
@@ -185,7 +198,7 @@ public class Game {
     
     // MARK: Did win
     private var didPlayerWin: Bool {
-        return !(purses[currentPlayerIndex] == 6)
+        return !(players[currentPlayerIndex].purse == 6)
     }
 }
 
@@ -193,56 +206,53 @@ enum GameError: Error{
     case gameMustHaveMoreThanOnePlayer
 }
 
-class QuestionsData{
-    
-    static var popQuestions = [String]()
-    static var scienceQuestions = [String]()
-    static var sportsQuestions = [String]()
-    static var rockQuestions = [String]()
-    
-    static func dequeueQuestionThenEnqueueQuestionAgain(questionsList: inout [String]){
-        
+// MARK: - Questions Category
+protocol QuestionCategory{
+    var questionsList: [String] {get set}
+    mutating func askQuestion()
+
+}
+extension QuestionCategory{
+    mutating func askQuestion(){
         if questionsList.count > 0{
             let removedQuestion = questionsList.removeFirst()
             questionsList.append(removedQuestion)
             print(removedQuestion)
         }
-        
     }
+}
+class PopCategory: QuestionCategory{
+    var questionsList = [String]()
+}
+
+class ScienceCategory: QuestionCategory{
+    var questionsList = [String]()
+}
+
+class SportsCategory: QuestionCategory{
+    var questionsList = [String]()
+ 
+}
+
+class RockCategory: QuestionCategory{
+    var questionsList = [String]()
+}
+
+class SpaceCategory: QuestionCategory{
+    var questionsList = [String]()
+}
+
+
+//MARK: Player
+class Player{
     
-    static func askQuestion(_ placeNom: Int) {
-        if QuestionsData.currentCategory(placeNom: placeNom) == .Pop {
-            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
-        }
-        if  QuestionsData.currentCategory(placeNom: placeNom) == .Science{
-            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
-        }
-        if  QuestionsData.currentCategory(placeNom: placeNom) == .Sports{
-            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
-        }
-        if  QuestionsData.currentCategory(placeNom: placeNom) == .Rock{
-            dequeueQuestionThenEnqueueQuestionAgain(questionsList: &QuestionsData.popQuestions)
-        }
+    var purse = 0
+    var place = 0
+    var isPenalityBox = false
+    
+    var playerName: String
+    
+    init(playerName: String) {
+        self.playerName = playerName
     }
-
-    static func currentCategory(placeNom: Int) -> QuestionCategory{
-
-        if placeNom == 0 || placeNom == 4 || placeNom == 0{
-            return .Pop
-        }else if placeNom == 1 || placeNom == 5 || placeNom == 9{
-            return .Science
-        }else if placeNom == 2 || placeNom == 6 || placeNom == 10{
-            return .Sports
-        }else{
-            return .Rock
-        }
-    }
-
-    enum QuestionCategory: String{
-        case Pop
-        case Science
-        case Sports
-        case Rock
-    }
-
 }
