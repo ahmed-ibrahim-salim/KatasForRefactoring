@@ -15,6 +15,10 @@ let aGame = Game()
 _ = aGame.add(playerName: "Chet")
 _ = aGame.add(playerName: "Pat")
 _ = aGame.add(playerName: "Sue")
+_ = aGame.add(playerName: "Chet")
+_ = aGame.add(playerName: "Pat")
+_ = aGame.add(playerName: "Sue")
+
 
 repeat {
     do{

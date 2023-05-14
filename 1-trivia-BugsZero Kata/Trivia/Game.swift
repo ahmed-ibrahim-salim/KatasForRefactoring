@@ -9,7 +9,6 @@
 import Foundation
 
 
-
 public class Game {
     var players: [Player] = []
 
@@ -56,22 +55,21 @@ public class Game {
         }
     }
     
-    
+    // places of 100, ranges
     
     // place -> question category
     func currentCategory(_ place: Int) -> QuestionCategory{
+       
+        let allCategories: [QuestionCategory] = [popCategory,
+                                                 scienceCategory,
+                                                 sportsCategory,
+                                                 rockCategory,
+                                                 spaceCategory]
+         let index = Int(arc4random_uniform(5))
+        
+        return allCategories[index]
+        
 
-        if place == 0 || place == 3 || place == 4{
-            return popCategory
-        }else if place == 1 || place == 5 || place == 9{
-            return scienceCategory
-        }else if place == 2 || place == 6 || place == 10{
-            return sportsCategory
-        }else if place == 7 || place == 8 {
-            return spaceCategory
-        }else{
-            return rockCategory
-        }
     }
     
     
@@ -117,7 +115,7 @@ public class Game {
         print(players[currentPlayerIndex].playerName, "is the current player")
         print("They have rolled a", roll)
         
-        if players[currentPlayerIndex].isPenalityBox {
+        if players[currentPlayerIndex].isInPenalityBox {
             canGetOutOfPenalety(roll)
             
         } else {
@@ -143,7 +141,9 @@ public class Game {
     private func moveToNextPlayer(){
         currentPlayerIndex += 1
         // reached end of the list + 1 then go to zero index
-        if currentPlayerIndex == players.count {currentPlayerIndex = 0}
+        if currentPlayerIndex == players.count {
+            currentPlayerIndex = 0
+        }
     }
     
     private func gettingOut() -> Bool {
@@ -167,7 +167,7 @@ public class Game {
     
     // MARK: Answers Methods
     public func wasCorrectlyAnswered() -> Bool {
-        if players[currentPlayerIndex].isPenalityBox{
+        if players[currentPlayerIndex].isInPenalityBox{
             return gettingOut()
             
         } else {
@@ -189,7 +189,7 @@ public class Game {
     public func wrongAnswer()->Bool{
         print("Question was incorrectly answered")
         print(players[currentPlayerIndex].playerName, "was sent to the penalty box")
-        players[currentPlayerIndex].isPenalityBox = true
+        players[currentPlayerIndex].isInPenalityBox = true
         
         moveToNextPlayer()
         return true
@@ -248,7 +248,7 @@ class Player{
     
     var purse = 0
     var place = 0
-    var isPenalityBox = false
+    var isInPenalityBox = false
     
     var playerName: String
     
