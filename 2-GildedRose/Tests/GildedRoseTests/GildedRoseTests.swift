@@ -3,9 +3,13 @@ import XCTest
 
 class GildedRoseTests: XCTestCase {
     func testFoo() throws {
-        let items = [Item(name: "foo", sellIn: 0, quality: 0)]
+        let items = [Item(name: "foo", sellIn: 4, quality: 40)]
         let app = GildedRose(items: items)
         app.updateQuality()
-        XCTAssertEqual(app.items[0].name, "fixme")
+        
+        XCTAssertEqual(3,  items[0].sellIn)
+        XCTAssertEqual(39,  items[0].quality)
+        
+        XCTAssertEqual(app.items[0].name, "foo")
     }
 }

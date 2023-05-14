@@ -1,3 +1,13 @@
+//
+//  Item.swift
+//  Trivia
+//
+//  Created by magdy khalifa on 14/05/2023.
+//  Copyright © 2023 Legacy Coderetreat. All rights reserved.
+//
+
+import Foundation
+
 public class Item {
     public var name: String
     public var sellIn: Int
