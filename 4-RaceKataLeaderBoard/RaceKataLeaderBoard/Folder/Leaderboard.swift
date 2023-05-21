@@ -14,23 +14,30 @@ class Leaderboard {
         self.races = races
     }
 
-    func driverPoints() -> [String: Int] {
-        var driverPoints = [String: Int]()
-        for race in races {
-            for driver in race.results {
-                let name = race.driverName(driver: driver)
-                driverPoints[name, default: 0] += race.points(driver: driver)
-            }
-        }
-        return driverPoints
-    }
-
+    
     func driverRankings() -> [String] {
         let rankings = driverPoints().sorted { $0.value > $1.value }
         return rankings.map { $0.key }
     }
+    
+    func driverPoints() -> [String: Int] {
+        
+        var driverPoints = [String: Int]()
+        
+        for race in races {
+            for driver in race.results {
+                let name = race.driverName(driver: driver)
+                // uses points from race
+                driverPoints[name, default: 0] += race.points(driver: driver)
+            }
+        }
+        
+        return driverPoints
+    }
+
 }
 
+//
 class Driver: Hashable {
     var name: String
     var country: String
@@ -61,6 +68,7 @@ class SelfDrivingCar: Driver {
     }
 }
 
+//
 class Race {
     static let points = [25, 18, 15]
 
@@ -72,6 +80,7 @@ class Race {
         self.name = name
         self.results = results
         self.driverNames = [Driver: String]()
+        
         for driver in results {
             var name = driver.name
             if let selfDrivingCar = driver as? SelfDrivingCar {
@@ -79,8 +88,10 @@ class Race {
             }
             driverNames[driver] = name
         }
+        
     }
 
+    // gets points score based on position
     func points(driver: Driver) -> Int {
         return Race.points[results.firstIndex(of: driver)!]
     }
