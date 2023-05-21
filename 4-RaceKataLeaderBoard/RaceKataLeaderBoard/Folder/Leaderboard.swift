@@ -9,11 +9,11 @@ import Foundation
 
 class Leaderboard {
     var races: [Race]
-
+    
     init(races: [Race]) {
         self.races = races
     }
-
+    
     
     func driverRankings() -> [String] {
         let rankings = driverPoints().sorted { $0.value > $1.value }
@@ -34,23 +34,22 @@ class Leaderboard {
         
         return driverPoints
     }
-
 }
 
 //
 class Driver: Hashable {
     var name: String
     var country: String
-
+    
     init(name: String, country: String) {
         self.name = name
         self.country = country
     }
-
+    
     static func == (lhs: Driver, rhs: Driver) -> Bool {
         return lhs.name == rhs.name && lhs.country == rhs.country
     }
-
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(name)
         hasher.combine(country)
@@ -60,7 +59,7 @@ class Driver: Hashable {
 class SelfDrivingCar: Driver {
     var algorithmVersion: Int
     var company: String
-
+    
     init(name: String?, country: String, algorithmVersion: Int, company: String) {
         self.algorithmVersion = algorithmVersion
         self.company = company
@@ -71,11 +70,11 @@ class SelfDrivingCar: Driver {
 //
 class Race {
     static let points = [25, 18, 15]
-
+    
     var name: String
     var results: [Driver]
     var driverNames: [Driver: String]
-
+    
     init(name: String, results: [Driver]) {
         self.name = name
         self.results = results
@@ -90,12 +89,12 @@ class Race {
         }
         
     }
-
+    
     // gets points score based on position
     func points(driver: Driver) -> Int {
         return Race.points[results.firstIndex(of: driver)!]
     }
-
+    
     func driverName(driver: Driver) -> String {
         return driverNames[driver] ?? ""
     }
