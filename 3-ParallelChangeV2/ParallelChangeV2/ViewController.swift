@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     }
 
     func runExample() {
-        let shoppingCart = ShoppingCart()
+        let shoppingCart = ShoppingCartWithList()
         shoppingCart.add(10)
         print("number of products: \(shoppingCart.numberOfProducts())")
         print("total price: \(shoppingCart.calculateTotalPrice())")

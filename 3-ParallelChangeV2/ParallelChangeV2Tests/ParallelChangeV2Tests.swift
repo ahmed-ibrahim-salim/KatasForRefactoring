@@ -19,13 +19,14 @@ final class ParallelChangeV2Tests: XCTestCase {
     
     func testAdministratorIsAlwaysAuthenticated() {
         let service = AuthenticationService()
-        let adminId = 12345
-        XCTAssertTrue(service.isAuthenticated(adminId))
+        let admin = Admin()
+//        let adminId = 12345
+        XCTAssertTrue(service.isAuthenticated(admin.userId, role: admin))
     }
     
     func testNormalUserIsNotAuthenticatedInitially() {
         let service = AuthenticationService()
-        let adminId = 11111
-        XCTAssertFalse(service.isAuthenticated(adminId))
+        let normalUser = NormalUser()
+        XCTAssertFalse(service.isAuthenticated(normalUser.userId, role: normalUser))
     }
 }

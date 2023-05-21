@@ -7,25 +7,61 @@
 
 import Foundation
 
-class ShoppingCart {
-    var price = 0
+//class ShoppingCart {
+//    var price = 0
+//
+//    // the goal is to remove a field above, replacing with
+//    // `prices = []`
+//
+//    func add(_ price: Int) {
+//        self.price = price
+//    }
+//
+//    func numberOfProducts() -> Int {
+//        return 1
+//    }
+//
+//    func calculateTotalPrice() -> Int {
+//        return self.price
+//    }
+//
+//    func hasDiscount() -> Bool {
+//        return self.price >= 100
+//    }
+//}
+
+
+// Solution
+class ShoppingCartWithList {
+    var prices: [Int] = []
 
     // the goal is to remove a field above, replacing with
     // `prices = []`
 
     func add(_ price: Int) {
-        self.price = price
+        self.prices.append(price)
     }
 
     func numberOfProducts() -> Int {
-        return 1
+        return prices.count
     }
 
     func calculateTotalPrice() -> Int {
-        return self.price
+        var finalResult = 0
+        
+        for price in self.prices{
+            finalResult += price
+        }
+        
+        return finalResult
     }
 
     func hasDiscount() -> Bool {
-        return self.price >= 100
+        
+        for price in prices {
+            return price >= 100
+        }
+        
+        return false
     }
 }

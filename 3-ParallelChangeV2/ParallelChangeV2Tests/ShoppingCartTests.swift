@@ -17,25 +17,25 @@ final class ShoppingCartTests: XCTestCase {
     }
     
     func testCartMayJustHaveASingleItem() {
-        let shoppingCart = ShoppingCart()
+        let shoppingCart = ShoppingCartWithList()
         shoppingCart.add(10);
         XCTAssertEqual(1, shoppingCart.numberOfProducts())
     }
 
     func testTheTotalPriceOfTheCartIsTotalOfItsContents() {
-        let shoppingCart = ShoppingCart()
+        let shoppingCart = ShoppingCartWithList()
         shoppingCart.add(10);
         XCTAssertEqual(10, shoppingCart.calculateTotalPrice())
     }
 
     func testHasDiscountWhenContainsAtLeastOnePremiumItem() {
-        let shoppingCart = ShoppingCart()
+        let shoppingCart = ShoppingCartWithList()
         shoppingCart.add(100);
         XCTAssertTrue(shoppingCart.hasDiscount())
     }
 
     func testDoesntHaveDiscountWhenAllItemsAreCheap() {
-        let shoppingCart = ShoppingCart()
+        let shoppingCart = ShoppingCartWithList()
         shoppingCart.add(10);
         XCTAssertFalse(shoppingCart.hasDiscount())
     }

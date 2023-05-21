@@ -14,9 +14,21 @@ class AuthenticationService {
     // func isAuthenticated(role, userId)
     //
 
-    func isAuthenticated(_ userId: Int) -> Bool {
-        return userId == 12345
+    
+    func isAuthenticated(_ userId: Int, role: Role) -> Bool {
+        let admin = Admin()
+        return userId == admin.userId
     }
+}
+
+protocol Role{
+    var userId: Int {get}
+}
+class Admin: Role{
+    let userId = 12345
+}
+class NormalUser: Role{
+    let userId = 1111
 }
 
 class AuthenticationClient {
@@ -27,7 +39,8 @@ class AuthenticationClient {
     }
 
     func run() {
-        let authenticated = authenticationService.isAuthenticated(33)
+        let admin = Admin()
+        let authenticated = authenticationService.isAuthenticated(33, role: admin)
         print("authenticated: \(authenticated)")
     }
 }
